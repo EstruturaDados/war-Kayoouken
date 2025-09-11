@@ -31,6 +31,12 @@ void removerNovaLinha (char *str){
 //--Fim Função--
 
 
+
+
+
+
+
+
 //--- Função para limpeza de buffer ---
 void limpezaBuffer(){
     int c;
@@ -39,8 +45,64 @@ void limpezaBuffer(){
 // --- FIM FUNÇÂO ---
 
 
+//função para exibir menu de ações
+void exibirMenu(mapaJogador, missaoJogador){
+    printf("--------------------------------------");
+    printf("O territorio do jogador é %s", mapaJogador);
+    printf("Missão principal jogador: %s ", missaoJogador);
+    printf("           Menu de ações: \n          ");
+    printf("1 - Atacar                          \n");
+    printf("2 - Verificar missão                \n");
+    printf("0 - Sair                            \n");
+    printf("--------------------------------------");
+    int resposta;
+    scanf("%d", &resposta);
+
+    if (resposta){
+        printf("Iniciando processo...");
+        printf("Enter para continuar: ");
+        getchar();
+
+    }
+}
+
+//Fim função
+
+
+
 //--- Função para exibir territórios ---
 void exibirTerritorio(struct Territorio *mapa){
+
+    //dados África
+    strcpy(mapa[0].nomeTerritorio, "África");
+    strcpy(mapa[0].corTerritorio, "Amarelo");
+    mapa[0].numeroTropas = 4;
+    //Fim África
+
+    //Dados Oceania
+    strcpy(mapa[1].nomeTerritorio, "Oceania");
+    strcpy(mapa[1].corTerritorio, "Azul");
+    mapa[1].numeroTropas = 3;
+    //Fim Oceania
+
+    //Dados Europa
+    strcpy(mapa[2].nomeTerritorio, "Europa");
+    strcpy(mapa[2].corTerritorio, "vermelho");
+    mapa[2].numeroTropas = 3;
+    //Fim Brasil
+
+    //Dados America do Sul
+    strcpy(mapa[3].nomeTerritorio, "America do sul");
+    strcpy(mapa[3].corTerritorio, "Verde");
+    mapa[3].numeroTropas = 5;
+    //Fim america do sul 
+
+    //Dados Ásia
+    strcpy(mapa[4].nomeTerritorio, "Ásia");
+    strcpy(mapa[4].corTerritorio, "Rosa");
+    mapa[4].numeroTropas = 5;
+    //Fim Ásia
+
     
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     printf("Exibindo territórios cadastrados \n");
@@ -95,7 +157,18 @@ void diminuirTropasPerdedor(struct Territorio *perdedor){
 }
 
 
+void alocacaoMemoria(){
+     //Utilizar calloc para a limpeza antes de adicionar o "Array" dos territórios, inicializando a memória com zeros
+    struct Territorio *Mapa_mundi;
+    Mapa_mundi = (struct Territorio *) calloc(MAX_TERRITORIO, sizeof(struct Territorio));
 
+    
+    //Verificação: se a alocação de memória foi efetivada com sucesso
+    if (Mapa_mundi == NULL){
+        printf("ERRO: falha na alocação de memória. \n");
+        return 1;
+    } //Se voltar "1", deu B.O
+}
 
 
 
@@ -136,6 +209,16 @@ int lancarDados() {
     return vencedor; //Se 1 == atacante vencendor|| se 2 == Defensor vencedor
 }
 
+//Adição de cada uma das funções a serem executadas dentro do main
+
+
+
+//Fim declaração
+
+
+
+
+
 
 //--- Ínicio da função principal ---
 int main(){
@@ -145,46 +228,8 @@ int main(){
     setlocale(LC_ALL,"Portuguese");
     srand(time(NULL));
 
-
-    //Utilizar calloc para a limpeza antes de adicionar o "Array" dos territórios, inicializando a memória com zeros
-    Mapa_mundi = (struct Territorio *) calloc(MAX_TERRITORIO, sizeof(struct Territorio));
-
     
-    //Verificação: se a alocação de memória foi efetivada com sucesso
-    if (Mapa_mundi == NULL){
-        printf("ERRO: falha na alocação de memória. \n");
-        return 1;
-    } //Se voltar "1", deu B.O
-
-    
-    //--- Inteface visualizada pelo user ---
-    printf("-----------------------------------\n");
-    printf("   Cadastrando novos Territorios\n");
-    printf("-----------------------------------\n");
-    printf("Inicializando cadastro...\nAperte enter para continuar:");
-    getchar();
-
-    for (int c = 0; c < MAX_TERRITORIO; c++){
-        printf("Cadastro do territorio de número %d\n", c + 1);
-        printf("Nome: ");
-        fgets(Mapa_mundi[c].nomeTerritorio, MAX_STRING, stdin);
-        printf("Cor: ");
-        fgets(Mapa_mundi[c].corTerritorio, MAX_STRING, stdin);
-        printf("Numeros de tropas");
-        scanf("%d", &Mapa_mundi[c].numeroTropas);
-
-
-        printf("\n-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-        printf(" Cadastro do Territorio %s\n", Mapa_mundi[c].nomeTerritorio);
-        printf("-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-
-        printf("Iniciando o proximo...Aperte Enter para continuar \n");
-        getchar();
-
-        limpezaBuffer();
-
-    
-    }   
+ 
     exibirTerritorio(Mapa_mundi);
     
 
