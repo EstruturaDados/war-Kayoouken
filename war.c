@@ -11,7 +11,15 @@
 #define MAX_TROPAS 5
 #define MAX_STRING 100
 #define MAX_TERRITORIO 5
+#define TOTAL_MISSOES 3
 //--- Constantes ---
+
+
+struct Missoes{
+    int numeroMissao;
+    char nomeMissao[MAX_STRING];
+};
+
 
 
 //--- Struct pois vai armazenar dados de diferentes naturalidades ----
@@ -22,6 +30,80 @@ struct Territorio{
 };
 // --- FIM STRUCT ---
 
+
+
+//Área destinada para colocar os protótipos da funções
+
+
+
+//FIm dos protótipos
+
+
+int main(){
+    srand(time(NULL));
+    setlocale(LC_ALL,"Portuguese");
+    //Utilização de ponteiros que indicaram as structs do programa
+    struct Territorio *Mapa_mundi = (struct Territorio *)calloc(MAX_TERRITORIO, sizeof(struct Territorio));
+    //verificar se a alocação deu tudo ok
+    if (Mapa_mundi == NULL){
+        printf("ERRO: falha na alocação de memória. \n");
+        return 1;
+        //Se voltar um 1 deu b.o
+    }
+    
+    //aloc de memoria//ponteiros
+    struct Missoes missaoAtual;
+    
+    printf("=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-");
+    printf("  BEM VINDO ao jogo de Guerra!   ");
+    printf("=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-");
+    printf("Sua missão %s\n\n", missaoAtual.nomeMissao);
+
+   
+    int opcao = -1; 
+    while (opcao != 0) {
+        exibirTerritorio(Mapa_mundi);
+        exibirMenu(Mapa_mundi, &missaoAtual);
+    }
+
+
+    
+    
+
+    //Parte final, onde se incia os confrontos
+    int atk01;
+    int atk02;
+    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=");
+    printf("\n Vamos iniciar os confrontos entre territórios\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("Escolha um territorio atacante entre 1 a 5: ");
+    scanf("%d", &atk01);
+    printf("Escolha outro territorio para travar batalha entre 1 a 5 , (tirando o ja escolhido anteriormente)");
+    scanf("%d", &atk02);
+    
+    if (atk01 == atk02){
+        printf("Erro: O territorio atacante não pode ser o mesmo que o defensor. \n");
+    }else {
+        printf("\nProcessando Batalha...\n");
+        confrontoTerritorios(&Mapa_mundi[atk01 - 1], &Mapa_mundi[atk02 - 1]);
+    }
+    
+
+    free(Mapa_mundi); //Tem que colocar o parâmetro nao esquecer
+
+       
+    
+
+    return 0;
+}
+// --- FIM função principal ---
+
+
+
+
+
+
+
 //--- Comeco FUnção quebra de linha ----
 void removerNovaLinha (char *str){
     //A função strcspn encontra o primeiro caractere de quebra de linha '\n'
@@ -30,11 +112,27 @@ void removerNovaLinha (char *str){
 
 //--Fim Função--
 
+//FUnção pra lancar as missões
+void lancarMissao(struct Missoes *quest){
+    //Criar um banco de missões possiveis
+    struct Missoes bancoDeMissoes[TOTAL_MISSOES];
+    
+    strcpy(quest[0].nomeMissao, "Acabar com o exercito rival com menos tropas");
+    quest[0].numeroMissao = 1;
 
+    strcpy(quest[1].nomeMissao, "Acabar com o exercito rival com mais tropas");
+    quest[1].numeroMissao = 2;
 
+    strcpy(quest[2].nomeMissao, "Acabar com 2 exercitos");
+    quest[2].numeroMissao = 3;
 
+    //Sorteia um indice aleatório do banco de missões
+    int indiceSorteado = rand() % TOTAL_MISSOES;
 
+    //Copia a missão sorteada para a missão atual do jogador
+    *quest = bancoDeMissoes[indiceSorteado];
 
+}
 
 
 //--- Função para limpeza de buffer ---
@@ -46,7 +144,7 @@ void limpezaBuffer(){
 
 
 //função para exibir menu de ações
-void exibirMenu(mapaJogador, missaoJogador){
+void exibirMenu( struct terrritorio *mapaJogador,struct Missoes * missaoJogador){
     printf("--------------------------------------");
     printf("O territorio do jogador é %s", mapaJogador);
     printf("Missão principal jogador: %s ", missaoJogador);
@@ -57,53 +155,72 @@ void exibirMenu(mapaJogador, missaoJogador){
     printf("--------------------------------------");
     int resposta;
     scanf("%d", &resposta);
+    struct Territorio * Mapa_mundi;
 
-    if (resposta){
-        printf("Iniciando processo...");
-        printf("Enter para continuar: ");
-        getchar();
-
+    switch(resposta){
+        case 1:{
+            printf("Vamos ao ataque!");
+            int atk01;
+            int atk02;
+            printf("\n=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=");
+            printf("\n Vamos iniciar os confrontos entre territórios\n");
+            printf("=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+            printf("Escolha um territorio atacante entre 1 a 5: ");
+            scanf("%d", &atk01);
+            printf("Escolha outro territorio para travar batalha entre 1 a 5 , (tirando o ja escolhido anteriormente)");
+            scanf("%d", &atk02);
+            
+            if (atk01 < 1|| atk01 > 5||atk02 < 1|| atk02 > 5){
+                printf("Erro: Numero inválido. Tente novamente \n");
+            }else if (atk01 == atk02){
+                printf("O territorio atacante não pode ser o mesmo que o defensor");
+            }else {
+                confrontoTerritorios(&Mapa_mundi[atk01], &Mapa_mundi[atk02]);
+            }
+            
+            break;
+        }
+        case 2:
+            exibirTerritorios(Mapa_mundi);
+            break;
+        case 3:
+        printf("\nLembrete da sua missão %s\n", missaoJogador-> nomeMissao);
+        
+            
+        
     }
-}
+}//Adicionei a chave q faltava pra fechar a função
+
 
 //Fim função
+
+
+
+//FUnção pra inicializar
+void inicializarMapa(struct Territorio *mapa){
+    
+    
+        //dados África
+    struct Territorio modeloMapa[MAX_TERRITORIO] = {
+        { "África",         "Amarelo",   4 },
+        { "Oceania",        "Azul",      3 },
+        { "Europa",         "Vermelho",  3 },//troquei a disposição dos Territorios dentro dessa struct, fica mais legível
+        { "America do Sul", "Verde",     5 },
+        { "Ásia",           "Rosa",      5 }
+    };
+    for (int i = 0;i < MAX_TERRITORIO; i++){
+        strcpy(mapa[i].nomeTerritorio, modeloMapa[i].nomeTerritorio);
+        strcpy(mapa[i].corTerritorio, modeloMapa[i].numeroTropas);
+        mapa[i].numeroTropas = modeloMapa[i].numeroTropas;
+    }
+}
+//FIM FUNÇÃO
 
 
 
 //--- Função para exibir territórios ---
 void exibirTerritorio(struct Territorio *mapa){
 
-    //dados África
-    strcpy(mapa[0].nomeTerritorio, "África");
-    strcpy(mapa[0].corTerritorio, "Amarelo");
-    mapa[0].numeroTropas = 4;
-    //Fim África
-
-    //Dados Oceania
-    strcpy(mapa[1].nomeTerritorio, "Oceania");
-    strcpy(mapa[1].corTerritorio, "Azul");
-    mapa[1].numeroTropas = 3;
-    //Fim Oceania
-
-    //Dados Europa
-    strcpy(mapa[2].nomeTerritorio, "Europa");
-    strcpy(mapa[2].corTerritorio, "vermelho");
-    mapa[2].numeroTropas = 3;
-    //Fim Brasil
-
-    //Dados America do Sul
-    strcpy(mapa[3].nomeTerritorio, "America do sul");
-    strcpy(mapa[3].corTerritorio, "Verde");
-    mapa[3].numeroTropas = 5;
-    //Fim america do sul 
-
-    //Dados Ásia
-    strcpy(mapa[4].nomeTerritorio, "Ásia");
-    strcpy(mapa[4].corTerritorio, "Rosa");
-    mapa[4].numeroTropas = 5;
-    //Fim Ásia
-
-    
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     printf("Exibindo territórios cadastrados \n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
@@ -124,7 +241,7 @@ void exibirTerritorio(struct Territorio *mapa){
 void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defensor){
     //Inicializa o gerador de números aleatorios 
     //srand(time(NULL)) garante que os resultados dos dados sejam diferentes a cada
-    srand(time(NULL));
+    
 
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("A batalha será travada entre %s (Atacante) e %s (Defensor)");
@@ -140,7 +257,7 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
     }
 
     //Inserindo a função lancar dados dentro da função confronto
-    lancarDados();
+    int vencedor = lancarDados();
 
     if (lancarDados == 1 ){
         diminuirTropasPerdedor(defensor);
@@ -154,21 +271,10 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
 void diminuirTropasPerdedor(struct Territorio *perdedor){
     perdedor->numeroTropas--;
     printf("O território %s perdeu 1 tropa. Agora tem %d tropas. \n", perdedor->nomeTerritorio, perdedor->numeroTropas);
-}
-
-
-void alocacaoMemoria(){
-     //Utilizar calloc para a limpeza antes de adicionar o "Array" dos territórios, inicializando a memória com zeros
-    struct Territorio *Mapa_mundi;
-    Mapa_mundi = (struct Territorio *) calloc(MAX_TERRITORIO, sizeof(struct Territorio));
 
     
-    //Verificação: se a alocação de memória foi efetivada com sucesso
-    if (Mapa_mundi == NULL){
-        printf("ERRO: falha na alocação de memória. \n");
-        return 1;
-    } //Se voltar "1", deu B.O
 }
+
 
 
 
@@ -215,48 +321,6 @@ int lancarDados() {
 
 //Fim declaração
 
-
-
-
-
+ 
 
 //--- Ínicio da função principal ---
-int main(){
-    //Alocação dinâmica de memória
-    //Utilização de ponteiros que indicaram as structs do programa
-    struct Territorio *Mapa_mundi;
-    setlocale(LC_ALL,"Portuguese");
-    srand(time(NULL));
-
-    
- 
-    exibirTerritorio(Mapa_mundi);
-    
-
-    //Parte final, onde se incia os confrontos
-    int atk01;
-    int atk02;
-    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=");
-    printf("\n Vamos iniciar os confrontos entre territórios\n");
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf("Escolha um territorio atacante entre 1 a 5: ");
-    scanf("%d", &atk01);
-    printf("Escolha outro territorio para travar batalha entre 1 a 5 , (tirando o ja escolhido anteriormente)");
-    scanf("%d", &atk02);
-    
-    if (atk01 == atk02){
-        printf("Erro: O territorio atacante não pode ser o mesmo que o defensor. \n");
-    }else {
-        printf("\nProcessando Batalha...\n");
-        confrontoTerritorios(&Mapa_mundi[atk01 - 1], &Mapa_mundi[atk02 - 1]);
-    }
-    
-
-    free(Mapa_mundi); //Tem que colocar o parâmetro nao esquecer
-
-       
-    
-
-    return 0;
-}
-// --- FIM função principal ---
