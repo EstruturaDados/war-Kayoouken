@@ -53,6 +53,8 @@ int main(){
     
     //aloc de memoria//ponteiros
     struct Missoes missaoAtual;
+    inicializarMapa(Mapa_mundi);
+    lancarMissao(&missaoAtual);
     
     printf("=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-");
     printf("  BEM VINDO ao jogo de Guerra!   ");
@@ -63,7 +65,7 @@ int main(){
     int opcao = -1; 
     while (opcao != 0) {
         exibirTerritorio(Mapa_mundi);
-        exibirMenu(Mapa_mundi, &missaoAtual);
+        exibirMenu(Mapa_mundi);
     }
 
 
@@ -117,14 +119,14 @@ void lancarMissao(struct Missoes *quest){
     //Criar um banco de missões possiveis
     struct Missoes bancoDeMissoes[TOTAL_MISSOES];
     
-    strcpy(quest[0].nomeMissao, "Acabar com o exercito rival com menos tropas");
-    quest[0].numeroMissao = 1;
+    strcpy(bancoDeMissoes[0].nomeMissao, "Acabar com o exercito rival com menos tropas");
+    bancoDeMissoes[0].numeroMissao = 1;
 
-    strcpy(quest[1].nomeMissao, "Acabar com o exercito rival com mais tropas");
-    quest[1].numeroMissao = 2;
+    strcpy(bancoDeMissoes[1].nomeMissao, "Acabar com o exercito rival com mais tropas");
+    bancoDeMissoes[1].numeroMissao = 2;
 
-    strcpy(quest[2].nomeMissao, "Acabar com 2 exercitos");
-    quest[2].numeroMissao = 3;
+    strcpy(bancoDeMissoes[2].nomeMissao, "Acabar com 2 exercitos");
+    bancoDeMissoes[2].numeroMissao = 3;
 
     //Sorteia um indice aleatório do banco de missões
     int indiceSorteado = rand() % TOTAL_MISSOES;
@@ -210,7 +212,7 @@ void inicializarMapa(struct Territorio *mapa){
     };
     for (int i = 0;i < MAX_TERRITORIO; i++){
         strcpy(mapa[i].nomeTerritorio, modeloMapa[i].nomeTerritorio);
-        strcpy(mapa[i].corTerritorio, modeloMapa[i].numeroTropas);
+        strcpy(mapa[i].corTerritorio, modeloMapa[i].corTerritorio);
         mapa[i].numeroTropas = modeloMapa[i].numeroTropas;
     }
 }
@@ -228,7 +230,7 @@ void exibirTerritorio(struct Territorio *mapa){
     getchar();
 //-----------------------------------------------------
     for(int c = 0;c < MAX_TERRITORIO; c++){
-        printf("%dº territorio:\n", c + 1);
+        printf("%dº territorio:\n", c++);
         printf("Nome: %s\n", mapa[c].nomeTerritorio);
         printf("Cor: %s\n", mapa[c].corTerritorio);
         printf("Quantidade de tropas: %d\n", mapa[c].numeroTropas);
@@ -259,7 +261,7 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
     //Inserindo a função lancar dados dentro da função confronto
     int vencedor = lancarDados();
 
-    if (lancarDados == 1 ){
+    if (vencedor == 1 ){
         diminuirTropasPerdedor(defensor);
     }else{
         diminuirTropasPerdedor(atacante);
