@@ -32,78 +32,60 @@ struct Territorio{
 
 
 
-//Área destinada para colocar os protótipos da funções
+//--- ÁREA DESTINADA PARA COLOCAR OS PROTÓTIPOS DAS FUNÇÕES ---
+void removerNovaLinha (char *str);
+void lancarMissao(struct Missoes *quest);
+void limpezaBuffer();
+void exibirMenu(struct Territorio *mapa, struct Missoes *missaoAtual); // CORREÇÃO: Parâmetros ajustados
+void inicializarMapa(struct Territorio *mapa);
+void exibirTerritorio(struct Territorio *mapa);
+void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defensor);
+void diminuirTropasPerdedor(struct Territorio *perdedor);
+int lancarDados();
+//--- FIM DOS PROTÓTIPOS ---
 
-
-
-//FIm dos protótipos
 
 
 int main(){
     srand(time(NULL));
-    setlocale(LC_ALL,"Portuguese");
+    setlocale(LC_ALL, "Portuguese");
+    
+
+    //Alocação dinâmica de memória
     //Utilização de ponteiros que indicaram as structs do programa
-    struct Territorio *Mapa_mundi = (struct Territorio *)calloc(MAX_TERRITORIO, sizeof(struct Territorio));
-    //verificar se a alocação deu tudo ok
+    int opcao = -1;
+    struct Territorio *Mapa_mundi;
+    //calloc p memória e ja inicia com zero
+    Mapa_mundi = (struct Territorio *) calloc(MAX_TERRITORIO, sizeof(struct Territorio));
+
+    //Verificação: se a alocação de memória foi efetivada com sucesso
     if (Mapa_mundi == NULL){
         printf("ERRO: falha na alocação de memória. \n");
         return 1;
-        //Se voltar um 1 deu b.o
-    }
+    } //Se voltar "1", deu B.O
     
-    //aloc de memoria//ponteiros
     struct Missoes missaoAtual;
     inicializarMapa(Mapa_mundi);
     lancarMissao(&missaoAtual);
-    
-    printf("=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-");
-    printf("  BEM VINDO ao jogo de Guerra!   ");
-    printf("=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-");
+
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("     Bem VINDO ao jogo de Guerra   \n" );
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("Sua missão %s\n\n", missaoAtual.nomeMissao);
-
-   
-    int opcao = -1; 
-    while (opcao != 0) {
-        exibirTerritorio(Mapa_mundi);
-        exibirMenu(Mapa_mundi);
+    
+    
+    while (opcao != 0){
+        exibirMenu(Mapa_mundi, &missaoAtual);
     }
 
+    free(Mapa_mundi);
 
-    
-    
-
-    //Parte final, onde se incia os confrontos
-    int atk01;
-    int atk02;
-    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=");
-    printf("\n Vamos iniciar os confrontos entre territórios\n");
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf("Escolha um territorio atacante entre 1 a 5: ");
-    scanf("%d", &atk01);
-    printf("Escolha outro territorio para travar batalha entre 1 a 5 , (tirando o ja escolhido anteriormente)");
-    scanf("%d", &atk02);
-    
-    if (atk01 == atk02){
-        printf("Erro: O territorio atacante não pode ser o mesmo que o defensor. \n");
-    }else {
-        printf("\nProcessando Batalha...\n");
-        confrontoTerritorios(&Mapa_mundi[atk01 - 1], &Mapa_mundi[atk02 - 1]);
-    }
-    
-
-    free(Mapa_mundi); //Tem que colocar o parâmetro nao esquecer
-
-       
-    
+    printf("\nJogo finalizado. Até a proxima\n");
 
     return 0;
+
 }
 // --- FIM função principal ---
-
-
-
-
-
 
 
 //--- Comeco FUnção quebra de linha ----
@@ -146,52 +128,65 @@ void limpezaBuffer(){
 
 
 //função para exibir menu de ações
-void exibirMenu( struct terrritorio *mapaJogador,struct Missoes * missaoJogador){
-    printf("--------------------------------------");
-    printf("O territorio do jogador é %s", mapaJogador);
-    printf("Missão principal jogador: %s ", missaoJogador);
-    printf("           Menu de ações: \n          ");
-    printf("1 - Atacar                          \n");
-    printf("2 - Verificar missão                \n");
-    printf("0 - Sair                            \n");
-    printf("--------------------------------------");
-    int resposta;
-    scanf("%d", &resposta);
-    struct Territorio * Mapa_mundi;
+void exibirMenu(struct Territorio *mapa, struct Missoes *missaoJogador){
+    int opcao;
+   
+    printf("\n--------------------------------------\n");
+    printf("           Menu de Ações\n");
+    printf("--------------------------------------\n");
+    printf("1 - Atacar\n");
+    printf("2 - Exibir Mapa de Territórios\n");
+    printf("3 - Verificar Missão\n");
+    printf("0 - Sair do Jogo\n");
+    printf("--------------------------------------\n");
+    printf("Escolha uma opção: ");
+    scanf("%d", &opcao);
+    limpezaBuffer();
 
-    switch(resposta){
+    switch(opcao){
         case 1:{
-            printf("Vamos ao ataque!");
+            printf("\n--- MODO DE ATAQUE ---\n");
+            
             int atk01;
             int atk02;
-            printf("\n=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=");
-            printf("\n Vamos iniciar os confrontos entre territórios\n");
-            printf("=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-            printf("Escolha um territorio atacante entre 1 a 5: ");
+            
+            printf("Escolha um território para ser o ATACANTE (1 a 5): ");
             scanf("%d", &atk01);
-            printf("Escolha outro territorio para travar batalha entre 1 a 5 , (tirando o ja escolhido anteriormente)");
+            limpezaBuffer();
+
+            printf("Escolha um território para ser o DEFENSOR (1 a 5): ");
             scanf("%d", &atk02);
+            limpezaBuffer();
             
-            if (atk01 < 1|| atk01 > 5||atk02 < 1|| atk02 > 5){
-                printf("Erro: Numero inválido. Tente novamente \n");
-            }else if (atk01 == atk02){
-                printf("O territorio atacante não pode ser o mesmo que o defensor");
-            }else {
-                confrontoTerritorios(&Mapa_mundi[atk01], &Mapa_mundi[atk02]);
+            if (atk01 < 1 || atk01 > MAX_TERRITORIO || atk02 < 1 || atk02 > MAX_TERRITORIO){
+                printf("\nErro: Número de território inválido. Tente novamente.\n");
+            } else if (atk01 == atk02){
+                printf("\nErro: O território atacante não pode ser o mesmo que o defensor.\n");
+            } else {
+                printf("\nProcessando Batalha...\n");
+                // CORREÇÃO: Usando o ponteiro 'mapa' que foi recebido pela função.
+                // O índice do array é (número escolhido - 1)
+                confrontoTerritorios(&mapa[atk01 - 1], &mapa[atk02 - 1]);
             }
-            
             break;
         }
         case 2:
-            exibirTerritorios(Mapa_mundi);
+            exibirTerritorio(mapa);
             break;
         case 3:
-        printf("\nLembrete da sua missão %s\n", missaoJogador-> nomeMissao);
-        
-            
-        
+            printf("\nLEMBRETE DA SUA MISSÃO: %s\n", missaoJogador->nomeMissao);
+            break;
+        case 0:
+            // Este caso não precisa de código, o loop no main() vai terminar.
+            break;
+        default:
+            printf("\nOpção inválida! Tente novamente.\n");
+            break;
     }
-}//Adicionei a chave q faltava pra fechar a função
+
+    return opcao;
+}
+
 
 
 //Fim função
@@ -199,43 +194,43 @@ void exibirMenu( struct terrritorio *mapaJogador,struct Missoes * missaoJogador)
 
 
 //FUnção pra inicializar
+//FUnção pra inicializar
 void inicializarMapa(struct Territorio *mapa){
-    
-    
-        //dados África
     struct Territorio modeloMapa[MAX_TERRITORIO] = {
-        { "África",         "Amarelo",   4 },
-        { "Oceania",        "Azul",      3 },
-        { "Europa",         "Vermelho",  3 },//troquei a disposição dos Territorios dentro dessa struct, fica mais legível
-        { "America do Sul", "Verde",     5 },
-        { "Ásia",           "Rosa",      5 }
+        { "África",         "Amarelo",  4 },
+        { "Oceania",        "Azul",     3 },
+        { "Europa",         "Vermelho", 3 },
+        { "America do Sul", "Verde",    5 },
+        { "Ásia",           "Rosa",     5 }
     };
-    for (int i = 0;i < MAX_TERRITORIO; i++){
+    for (int i = 0; i < MAX_TERRITORIO; i++){
         strcpy(mapa[i].nomeTerritorio, modeloMapa[i].nomeTerritorio);
         strcpy(mapa[i].corTerritorio, modeloMapa[i].corTerritorio);
         mapa[i].numeroTropas = modeloMapa[i].numeroTropas;
     }
 }
-//FIM FUNÇÃO
+    //FIM FUNÇÃO
 
 
 
 //--- Função para exibir territórios ---
 void exibirTerritorio(struct Territorio *mapa){
 
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     printf("Exibindo territórios cadastrados \n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     printf("Pressione Enter para continuar.\n");
     getchar();
 //-----------------------------------------------------
     for(int c = 0;c < MAX_TERRITORIO; c++){
-        printf("%dº territorio:\n", c++);
+        printf("%dº territorio:\n", c + 1);
         printf("Nome: %s\n", mapa[c].nomeTerritorio);
         printf("Cor: %s\n", mapa[c].corTerritorio);
         printf("Quantidade de tropas: %d\n", mapa[c].numeroTropas);
         printf("=-=-=-=-=-=-=-=-=-=-=\n");
     }
+    printf("Pressione Enter para continuar...\n");
+    getchar();
 }
 // --- FIM FUNÇÂO ---
 
@@ -246,7 +241,7 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
     
 
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    printf("A batalha será travada entre %s (Atacante) e %s (Defensor)");
+    printf("A batalha será travada entre %s (Atacante) e %s (Defensor)", atacante ->nomeTerritorio, defensor -> nomeTerritorio);
     printf("%s tem %d tropas.\n", atacante->nomeTerritorio, atacante->numeroTropas);
     printf("%s tem %d tropas.\n", defensor->nomeTerritorio, defensor->numeroTropas);
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
@@ -262,8 +257,10 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
     int vencedor = lancarDados();
 
     if (vencedor == 1 ){
+        printf("Vitória do ATACANTE! \n");
         diminuirTropasPerdedor(defensor);
     }else{
+        printf("Vitória do DEFENSOR\n");
         diminuirTropasPerdedor(atacante);
     }
 
@@ -273,15 +270,9 @@ void confrontoTerritorios(struct Territorio* atacante, struct Territorio* defens
 void diminuirTropasPerdedor(struct Territorio *perdedor){
     perdedor->numeroTropas--;
     printf("O território %s perdeu 1 tropa. Agora tem %d tropas. \n", perdedor->nomeTerritorio, perdedor->numeroTropas);
-
-    
 }
 
-
-
-
 //Função para lançamento de dados
-
 int lancarDados() {
     int dados[2];
     int houveEmpate;
@@ -292,34 +283,27 @@ int lancarDados() {
         houveEmpate = 0; // Reseta a variável a cada nova rodada
         
         printf("Lançando dados...\n");
+        getchar();
+
+        dados[0] = (rand() % 6) + 1;
+        printf("Dado do ATACANTE: %d\n", dados[0]);
+
+        dados[1] = (rand() % 6) + 1;
+        printf("Dado do DEFENSOR: %d\n", dados[1]);
 
         // Loop para lançar os dados
-        for (int i = 0; i < 2; i++) {
-            // Gera um número aleatório entre 1 e 6
-            dados[i] = (rand() % 6) + 1;
-            printf("Dado %d lançado: %d\n", i + 1, dados[i]);
-        }
-
-        if (dados[0] > dados[1]) {
-            printf("\nO Atacante foi vitorioso com um %d e o defensor perdeu com %d\n", dados[0], dados[1]);
+        if (dados[0] > dados[1]){
             vencedor = 1;
-        } else if (dados[0] == dados[1]) {
-            printf("\nO confronto deu empate! Vamos tentar novamente.\n");
-            houveEmpate = 1; // Define a variável para manter o loop ativo
-            printf("\nAperte Enter para continuar...");
-            getchar();
-        } else {
-            printf("\nO defensor foi vitorioso com um %d e o atacante perdeu com %d\n", dados[1], dados[0]);
-            vencedor = 2;
-        }
-    } while (houveEmpate == 1); // A condição para o loop continuar é se houver empate
+            }else if (dados[0] < dados[1]){
+                vencedor = 2;
+            }else{
+                printf("\nO confronto deu EMPATE! Lançando os dados novamente;\n");
+                houveEmpate = 1;
+            }
+        }while (houveEmpate == 1);
 
-    return vencedor; //Se 1 == atacante vencendor|| se 2 == Defensor vencedor
-}
-
-//Adição de cada uma das funções a serem executadas dentro do main
-
-
+        return vencedor;
+    }
 
 //Fim declaração
 
